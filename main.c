@@ -120,6 +120,23 @@ void clearAllLists() {
         startOfColumns[i] = NULL;
     }
 }
+
+//takes card value char as input and converts to int for comparisons
+int cardValueConverter(char card_value) {
+    if (card_value == 'J') {
+        return 11;
+    } else if (card_value == 'Q') {
+        return 12;
+    } else if (card_value == 'K') {
+        return 13;
+    } else if (card_value == 'A') {
+        return 1;
+    } else if (card_value == 'T') {
+        return 10;
+    } else {
+        return ((int)card_value)-48;
+    }
+}
 /////////////////////////////////////////////
 // commands
 
@@ -146,26 +163,7 @@ void LD(char filename[], bool turned) {
         if(columnCounter > 6) {
             columnCounter = 0;
         }
-        switch (content[0]) {
-            case 'J':
-                cardValue = 11;
-                break;
-            case 'Q':
-                cardValue = 12;
-                break;
-            case 'K':
-                cardValue = 13;
-                break;
-            case 'A':
-                cardValue = 1;
-                break;
-            case 'T':
-                cardValue = 10;
-                break;
-            default:
-                cardValue = (int)content[0] - 48;
-                break;
-        }
+        cardValue = cardValueConverter(content[0]);
         if(content[1] == 'D'){
             diamonds[cardValue-1]++;
         }
@@ -467,85 +465,52 @@ void printCard(struct cardNode* card){
 
 void printPlayScreen(struct cardNode* cardLinkedLists[]) {
     //clears terminal before printing the playscreen again
-    int counterForF = 0;
     system("cls");
     //Initializes all C columns to be the first in the stack of cards
-    struct cardNode* C1 = cardLinkedLists[0];
-    struct cardNode* C2 = cardLinkedLists[1];
-    struct cardNode* C3 = cardLinkedLists[2];
-    struct cardNode* C4 = cardLinkedLists[3];
-    struct cardNode* C5 = cardLinkedLists[4];
-    struct cardNode* C6 = cardLinkedLists[5];
-    struct cardNode* C7 = cardLinkedLists[6];
+    struct cardNode* C_columns[7] = {
+            cardLinkedLists[0], cardLinkedLists[1], cardLinkedLists[2], cardLinkedLists[3],
+            cardLinkedLists[4], cardLinkedLists[5], cardLinkedLists[6]};
 
     //initializes all F columns to be the last in the stack of cards
-    struct cardNode* F1 = returnLastInCardStack(cardLinkedLists[7]);
-    struct cardNode* F2 = returnLastInCardStack(cardLinkedLists[8]);
-    struct cardNode* F3 = returnLastInCardStack(cardLinkedLists[9]);
-    struct cardNode* F4 = returnLastInCardStack(cardLinkedLists[10]);
+    struct cardNode* F_columns[4] = {
+            returnLastInCardStack(cardLinkedLists[7]), returnLastInCardStack(cardLinkedLists[8]),
+            returnLastInCardStack(cardLinkedLists[9]), returnLastInCardStack(cardLinkedLists[10])};
 
+    int counterForF = 0;
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\n");
     printf("\n");
-    while ((C1 != NULL || C2 != NULL || C3 != NULL || C4 != NULL || C5 != NULL || C6 != NULL || C7 != NULL) || counterForF < 7) {
-        printCard(C1);
-        printCard(C2);
-        printCard(C3);
-        printCard(C4);
-        printCard(C5);
-        printCard(C6);
-        printCard(C7);
+    while ((C_columns[0] != NULL || C_columns[1] != NULL || C_columns[2] != NULL || C_columns[3] != NULL
+            || C_columns[4] != NULL || C_columns[5] != NULL || C_columns[6] != NULL) || counterForF < 7) {
+
+        for (int column = 0; column < 7; ++column) {
+            printCard(C_columns[column]);
+        }
+
+        printf("\t");
         if (counterForF == 0) {
-            printf("\t");
-            printCard(F1);
+            printCard(F_columns[0]);
             printf("F1");
-        }
-        if (counterForF == 2) {
-            printf("\t");
-            printCard(F2);
+        } else if (counterForF == 2) {
+            printCard(F_columns[1]);
             printf("F2");
-        }
-        if (counterForF == 4) {
-            printf("\t");
-            printCard(F3);
+        } else if (counterForF == 4) {
+            printCard(F_columns[2]);
             printf("F3");
-        }
-        if (counterForF == 6) {
-            printf("\t");
-            printCard(F4);
+        } else if (counterForF == 6) {
+            printCard(F_columns[3]);
             printf("F4");
         }
-        if (counterForF != 7) {
-            ++counterForF;
-        }
-        if (C1 != NULL) {
-            C1 = C1->next;
-        }
-        if (C2 != NULL) {
-            C2 = C2->next;
-        }
-        if (C3 != NULL) {
-            C3 = C3->next;
-        }
-        if (C4 != NULL) {
-            C4 = C4->next;
-        }
-        if (C5 != NULL) {
-            C5 = C5->next;
-        }
-        if (C6 != NULL) {
-            C6 = C6->next;
-        }
-        if (C7 != NULL) {
-            C7 = C7->next;
+        counterForF++;
+
+        for (int column1 = 0; column1 < 7; ++column1) {
+            if (C_columns[column1] != NULL) {
+                C_columns[column1] = C_columns[column1]->next;
+            }
         }
         printf("\n");
     }
-    printf("LAST command:");
-    printf("%s", lastCommand);
-    printf("\n");
-    printf("Message:");
-    printf("%s", message);
-    printf("\n");
+    printf("LAST command:%s\n", lastCommand);
+    printf("Message:%s\n", message);
     printf("INPUT > ");
 }
 void startUpPhase(bool isQUsed);
@@ -607,50 +572,10 @@ void playPhase() {
                         fromCard[1] = tempFromCard->card[1];
                     }
                 }
-                int fromCardValue;
-                int toCardValue;
+                int fromCardValue = cardValueConverter(fromCard[0]);
+                int toCardValue = cardValueConverter(toCard[0]);
                 bool rightColorForMove = true;
 
-                switch (fromCard[0]) {
-                    case 'J':
-                        fromCardValue = 11;
-                        break;
-                    case 'Q':
-                        fromCardValue = 12;
-                        break;
-                    case 'K':
-                        fromCardValue = 13;
-                        break;
-                    case 'A':
-                        fromCardValue = 1;
-                        break;
-                    case 'T':
-                        fromCardValue = 10;
-                        break;
-                    default:
-                        fromCardValue = (int)fromCard[0] - 48;
-                        break;
-                }
-                switch (toCard[0]) {
-                    case 'J':
-                        toCardValue = 11;
-                        break;
-                    case 'Q':
-                        toCardValue = 12;
-                        break;
-                    case 'K':
-                        toCardValue = 13;
-                        break;
-                    case 'A':
-                        toCardValue = 1;
-                        break;
-                    case 'T':
-                        toCardValue = 10;
-                        break;
-                    default:
-                        toCardValue = (int)toCard[0] - 48;
-                        break;
-                }
                 if (toColumn[0] == 'C') {
                     if ((toCard[1] != fromCard[1]) && ((int)toColumn[1]-48) < 8) {
                         rightColorForMove = true;
