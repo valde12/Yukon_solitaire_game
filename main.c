@@ -197,44 +197,16 @@ void SD(char filename[]) {
     FILE *fwrtr;
     fwrtr = fopen(filename, "w");
     int columnCounter = 0;
-    struct cardNode* current0 = startOfColumns[0];
-    struct cardNode* current1 = startOfColumns[1];
-    struct cardNode* current2 = startOfColumns[2];
-    struct cardNode* current3 = startOfColumns[3];
-    struct cardNode* current4 = startOfColumns[4];
-    struct cardNode* current5 = startOfColumns[5];
-    struct cardNode* current6 = startOfColumns[6];
-    //card = current0->card;
+    struct cardNode* C_columns[7] = {
+            startOfColumns[0], startOfColumns[1], startOfColumns[2], startOfColumns[3],
+            startOfColumns[4], startOfColumns[5], startOfColumns[6]};
 
-    while (current0 != NULL || current1 != NULL || current2 != NULL || current3 != NULL || current4 != NULL || current5 != NULL || current6 != NULL) {
-
-        if (current0 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current0->card[0], current0->card[1]);
-            current0 = current0->next;
-        }
-        if (current1 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current1->card[0], current1->card[1]);
-            current1 = current1->next;
-        }
-        if (current2 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current2->card[0], current2->card[1]);
-            current2 = current2->next;
-        }
-        if (current3 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current3->card[0], current3->card[1]);
-            current3 = current3->next;
-        }
-        if (current4 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current4->card[0], current4->card[1]);
-            current4 = current4->next;
-        }
-        if (current5 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current5->card[0], current5->card[1]);
-            current5 = current5->next;
-        }
-        if (current6 != NULL) {
-            fprintf(fwrtr, "%c%c\n", current6->card[0], current6->card[1]);
-            current6 = current6->next;
+    while (C_columns[0] != NULL || C_columns[1] != NULL || C_columns[2] != NULL || C_columns[3] != NULL || C_columns[4] != NULL || C_columns[5] != NULL || C_columns[6] != NULL) {
+        for (int column = 0; column < 7; ++column) {
+            if (C_columns[column] != NULL) {
+                fprintf(fwrtr, "%c%c\n", C_columns[column]->card[0], C_columns[column]->card[1]);
+                C_columns[column] = C_columns[column]->next;
+            }
         }
     }
     fclose(fwrtr);
@@ -247,21 +219,19 @@ void SW() {
     LD("tempCards.txt", true);
 }
 
+void moveAllColumnsToC1() {
+    struct cardNode* C_columns[7] = {
+            startOfColumns[0], startOfColumns[1], startOfColumns[2], startOfColumns[3],
+            startOfColumns[4], startOfColumns[5], startOfColumns[6]};
+
+    for (int columns = 1; columns < 7; ++columns) {
+        removeFromColumnAndAddToNewColumn(columns, 0, C_columns[columns]->card);
+    }
+}
+
 void SI(int split) {
     //Move alle cards to one pile
-    struct cardNode* current1 = startOfColumns[1];
-    struct cardNode* current2 = startOfColumns[2];
-    struct cardNode* current3 = startOfColumns[3];
-    struct cardNode* current4 = startOfColumns[4];
-    struct cardNode* current5 = startOfColumns[5];
-    struct cardNode* current6 = startOfColumns[6];
-
-    removeFromColumnAndAddToNewColumn(6, 0, current6->card);
-    removeFromColumnAndAddToNewColumn(5, 0, current5->card);
-    removeFromColumnAndAddToNewColumn(4, 0, current4->card);
-    removeFromColumnAndAddToNewColumn(3, 0, current3->card);
-    removeFromColumnAndAddToNewColumn(2, 0, current2->card);
-    removeFromColumnAndAddToNewColumn(1, 0, current1->card);
+    moveAllColumnsToC1();
 
     //Splitting the deck according to int split
     struct cardNode* splitCard = startOfColumns[0];
@@ -307,74 +277,20 @@ void SI(int split) {
 }
 
 void SR() {
-    struct cardNode* current0 = startOfColumns[0];
-    struct cardNode* current1 = startOfColumns[1];
-    struct cardNode* current2 = startOfColumns[2];
-    struct cardNode* current3 = startOfColumns[3];
-    struct cardNode* current4 = startOfColumns[4];
-    struct cardNode* current5 = startOfColumns[5];
-    struct cardNode* current6 = startOfColumns[6];
-
-    removeFromColumnAndAddToNewColumn(1, 0, current1->card);
-    removeFromColumnAndAddToNewColumn(2, 0, current2->card);
-    removeFromColumnAndAddToNewColumn(3, 0, current3->card);
-    removeFromColumnAndAddToNewColumn(4, 0, current4->card);
-    removeFromColumnAndAddToNewColumn(5, 0, current5->card);
-    removeFromColumnAndAddToNewColumn(6, 0, current6->card);
+    moveAllColumnsToC1();
+    struct cardNode* current = startOfColumns[0];
 
     time_t t;
     srand((unsigned) time(&t));     //Initializes a random number generator
 
     struct cardNode* pTemp = NULL;
 
-    int i;
-    for (i = 1; i < 53; i++) {
-        int r = rand() % 7 + 1;    // Returns an almost-random integer between 1 and 7 which represents the different columns
-
-        switch(r) {
-            case 1:
-                pTemp = current0;
-                insertCardFirst(0, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 2:
-                pTemp = current0;
-                insertCardFirst(1, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 3:
-                pTemp = current0;
-                insertCardFirst(2, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 4:
-                pTemp = current0;
-                insertCardFirst(3, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 5:
-                pTemp = current0;
-                insertCardFirst(4, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 6:
-                pTemp = current0;
-                insertCardFirst(5, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-            case 7:
-                pTemp = current0;
-                insertCardFirst(6, pTemp->card, true);
-                current0 = current0->next;
-                removeCardFromList(0, pTemp->card);
-                break;
-        }
+    for (int i = 1; i < 53; i++) {
+        int randomNumber = rand() % 7 + 1;    // Returns an almost-random integer between 1 and 7 which represents the different columns
+        pTemp = current;
+        insertCardFirst(randomNumber-1, pTemp->card, true);
+        current = current->next;
+        removeCardFromList(0, pTemp->card);
     }
     SD("tempCards.txt");
     clearAllLists();
@@ -396,57 +312,31 @@ void P() {
         strncpy(message, "Error: There is no deck loaded", 50);
     }
 
-    int rowCounter = 0;
-    int columnCounter = 0;
-    int columnTurnedCards = 1;
-    int startOfColumnCards = 0;
+    int rowCounter = 0, columnCounter = 0, startOfColumnCards = 0, columnTurnedCards = 1;
     char content[104];
 
     //while loop that keeps printing
     while(rowCounter <= 11) {
-        if(rowCounter == 0) {
-            if (columnCounter == 0) {
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, true);
-            } else {
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, false);
-            }
+        if (columnCounter < columnTurnedCards && columnCounter >= startOfColumnCards || (rowCounter == 0 && columnCounter == 0)) {
+            fgets(content, 104, fptr);
+            insertCardLast(columnCounter, content, true);
+        } else if ((columnCounter >= columnTurnedCards && columnCounter >= startOfColumnCards) || (rowCounter == 0 && columnCounter != 0)){
+            fgets(content, 104, fptr);
+            insertCardLast(columnCounter, content, false);
         }
-        if(rowCounter > 0 && rowCounter < 6) {
-            if (columnCounter < columnTurnedCards && columnCounter >= startOfColumnCards) {
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, true);
-            } else if (columnCounter >= columnTurnedCards && columnCounter >= startOfColumnCards){
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, false);
-            }
-        }
-        if (rowCounter >= 6) {
-            if (columnCounter < columnTurnedCards && columnCounter >= startOfColumnCards) {
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, true);
-            } else if (columnCounter >= columnTurnedCards && columnCounter >= startOfColumnCards){
-                fgets(content, 104, fptr);
-                insertCardLast(columnCounter, content, false);
-            }
-        }
+
         if (columnCounter < 6) {
             columnCounter++;
         } else {
+            if (rowCounter == 0 || rowCounter >= 5) {
+                startOfColumnCards++;
+            }
             columnCounter = 0;
-            if (rowCounter == 0) {
-                startOfColumnCards++;
-            }
-            if(rowCounter >= 5) {
-                startOfColumnCards++;
-            }
             rowCounter++;
             columnTurnedCards++;
         }
     }
     fclose(fptr);
-
 }
 
 /////////////////////////////////////////////////
@@ -479,8 +369,7 @@ void printPlayScreen(struct cardNode* cardLinkedLists[]) {
     int counterForF = 0;
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\n");
     printf("\n");
-    while ((C_columns[0] != NULL || C_columns[1] != NULL || C_columns[2] != NULL || C_columns[3] != NULL
-            || C_columns[4] != NULL || C_columns[5] != NULL || C_columns[6] != NULL) || counterForF < 7) {
+    while ((C_columns[0] != NULL || C_columns[1] != NULL || C_columns[2] != NULL || C_columns[3] != NULL || C_columns[4] != NULL || C_columns[5] != NULL || C_columns[6] != NULL) || counterForF < 7) {
 
         for (int column = 0; column < 7; ++column) {
             printCard(C_columns[column]);
@@ -516,11 +405,7 @@ void printPlayScreen(struct cardNode* cardLinkedLists[]) {
 void startUpPhase(bool isQUsed);
 
 void playPhase() {
-    char command[20];
-    char fromColumn[2];
-    char toColumn[2];
-    char fromCard[2];
-    char toCard[2];
+    char command[20], fromColumn[2], toColumn[2], fromCard[2], toCard[2];
     struct cardNode* tempToCard;
     struct cardNode* tempFromCard;
     strncpy(command, "", 20);
@@ -531,18 +416,17 @@ void playPhase() {
         strncpy(toColumn, "", 2);
         strncpy(fromCard, "", 2);
         strncpy(toCard, "", 2);
+
         do {
             printPlayScreen(startOfColumns);
             scanf(" %[^\n]", command);
             strncpy(lastCommand, command, 20);
             if (((command[2] == ':' && command[5] == '-' && command[6] == '>') || (command[2] == ':' && command[5] != ' ')) && command[0] != 'Q') {
                 if (command[2] == ':' && command[5] == '-' && command[6] == '>') {
-                    fromColumn[0] = command[0];
-                    fromColumn[1] = command[1];
-                    fromCard[0] = command[3];
-                    fromCard[1] = command[4];
-                    toColumn[0] = command[7];
-                    toColumn[1] = command[8];
+                    fromColumn[0] = command[0], fromColumn[1] = command[1];
+                    fromCard[0] = command[3], fromCard[1] = command[4];
+                    toColumn[0] = command[7], toColumn[1] = command[8];
+
                     tempToCard = returnLastInCardStack(startOfColumns[((int) toColumn[1])-49]);
                     if (tempToCard != NULL) {
                         toCard[0] = tempToCard->card[0];
